@@ -1,4 +1,5 @@
 #include "base.cpp"
+#include <omp.h>
 
 template <int height, int width>
 struct omp_version : public base <height, width> {

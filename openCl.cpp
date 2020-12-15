@@ -70,9 +70,15 @@ struct openCL_version {
             cl::Context context(devices);
             cl::CommandQueue queue = cl::CommandQueue(context, devices[device_id]);
 
-            cl::Buffer mapBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, N_ELEMENTS * sizeof(u_char));
+            constexpr size_t data_size = N_ELEMENTS * sizeof(u_char);
 
-            queue.enqueueWriteBuffer(mapBuffer, CL_FALSE, 0, N_ELEMENTS * sizeof(u_char), map);
+            cl::Buffer mapInBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, data_size);
+            cl::Buffer mapOutBuffer = cl::Buffer(context, CL_MEM_WRITE_ONLY, data_size);
+
+            queue.enqueueWriteBuffer(mapInBuffer, CL_FALSE, 0, data_size, map);
+
+            u_char map_out[height][width] = {{}};
+            queue.enqueueWriteBuffer(mapOutBuffer, CL_FALSE, 0, data_size, map_out);
 
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
@@ -86,18 +92,23 @@ struct openCL_version {
 
             cl::Kernel kernel(program, "calculate");
 
-            kernel.setArg(0, mapBuffer);
+            kernel.setArg(0, mapInBuffer);
             kernel.setArg(1, height);
             kernel.setArg(2, width);
+            kernel.setArg(3, mapOutBuffer);
 
             cl::NDRange global(height, width);
-            cl::NDRange local(16, 16);
+            cl::NDRange local(2, 2);
 
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
+                queue.enqueueCopyBuffer(mapOutBuffer, mapInBuffer, 0, 0, data_size);
+                //queue.enqueueReadBuffer(mapInBuffer, CL_TRUE, 0, data_size, map);
+                //std::cout << "iteration: " << i << std::endl;
+                //print();
             }
 
-            queue.enqueueReadBuffer(mapBuffer, CL_TRUE, 0, N_ELEMENTS * sizeof(u_char), map);
+            queue.enqueueReadBuffer(mapInBuffer, CL_TRUE, 0, data_size, map);
 
         }
         catch (cl::Error err) {

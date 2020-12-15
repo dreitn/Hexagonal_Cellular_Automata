@@ -5,7 +5,7 @@ char get(__global char *map, int x, int y, int w, int h, int gw, int gh) {
     return map[y * gw + x];
 }
 
-__kernel void calculate(__global char *map, int height, int width){
+__kernel void calculate(__global const char *map, int height, int width, __global char *map_out) {
     int x = get_global_id(0);
     int y = get_global_id(1);
 
@@ -24,18 +24,18 @@ __kernel void calculate(__global char *map, int height, int width){
 
     // cell is dead and has 3 neighbors then cell comes alive
     if(get(map, x, y, width, height, gw, gh) == 0 && life == 3) {
-        map[ y * gw + x ] = 1;
+        map_out[y * gw + x] = 1;
         return;
     }
 
     // cell is alive and has 2 or 3 neighbors, cell stays alive
     if(get(map, x, y, width, height, gw, gh) == 1 && (life == 2 || life == 3)) {
-        map[ y * gw + x ] = 1;
+        map_out[y * gw + x] = 1;
         return;
     }
 
     // in all others cases the ressult is death
-    map[ y * gw + x ] = 0;
+    map_out[y * gw + x] = 0;
 
 }
 

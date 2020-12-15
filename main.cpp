@@ -1,9 +1,8 @@
 #include <iostream>
-#include <omp.h>
 #include "openCl.cpp"
 #include "cell.cpp"
 #include "omp.cpp"
-#include "serial.cpp"
+#include "sequential.cpp"
 #include "Timer.cpp"
 
 
@@ -43,34 +42,37 @@ void validate_result(const auto& reference, const auto& other) {
 }
 
 int main() {
-    constexpr int w = 256, h = 256, it = 2000;
+    constexpr int w = 8, h = 8, it = 1;
 
     cell map[h][w];
     setupMap(map);
     populateMap(map);
 
-    serial_version serial(map, it);
+    sequential_version serial(map, it);
+    serial.print();
+    std::cout << std::endl;
     {
         Timer t;
         serial();
     }
-    //serial.print();
+    std::cout << "seq_version\n";
+    serial.print();
 
-    std::cout << std::endl;
-
+/*
     omp_version omp(map, it);
     {
         Timer t;
         omp();
     }
-    //omp.print();
+    omp.print();
     validate_result(serial, omp);
-
+*/
+    std::cout << "openCl version:\n";
     openCL_version openCl(map, it);
     {
         Timer t;
         openCl();
     }
-    //openCl.print();
+    openCl.print();
     //validate_result(serial, openCl);
 }

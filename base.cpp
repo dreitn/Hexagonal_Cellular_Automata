@@ -32,7 +32,10 @@ struct base {
     }
 
     inline u_int8_t count_life(int i, int j) {
-        return map[i-1][j-1] + map[i][j-1] + map[i][j-1] + map[i][j+1] + map[i][j+1] + map[i+1][j+1];
+        return map[i-1][j-1] + map[i-1][j] + map[i][j+1] +
+               map[i][j-1] + map[i][j+1] +
+               map[i+1][j-1] + map[i+1][j] + map[i+1][j+1];
+        //return map[i-1][j-1] + map[i][j-1] + map[i][j-1] + map[i][j+1] + map[i][j+1] + map[i+1][j+1];
     }
 
     void print() {
