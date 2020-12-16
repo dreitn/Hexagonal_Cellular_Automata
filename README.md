@@ -9,3 +9,4 @@ openmp version: 1.189948s
 + result seems to be ok
 openCl version: 0.226511s
 + result seems to be ok
+ 
