@@ -23,6 +23,8 @@ template<int height, int width>
 struct openCL_version {
     size_t iterations;
     u_char map[height][width];
+    
+    std::string sourceCode;
 
     openCL_version(cell (&m)[height][width], int iterations) : iterations(iterations) {
         for (size_t i = 0; i < height; i++) {
@@ -30,6 +32,9 @@ struct openCL_version {
                 map[i][j] = (u_char) m[i][j];
             }
         }
+        
+        std::ifstream sourceFile("kernel.cl");
+        sourceCode = std::string(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
     }
 
     // https://sites.google.com/site/csc8820/opencl-basics/a-simple-opencl-example
@@ -58,9 +63,6 @@ struct openCL_version {
 
             u_char empty[height][width] = {{}};
             queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, empty);
-
-            std::ifstream sourceFile("kernel.cl");
-            std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
 
             //std::cout << sourceCode << std::endl;
             cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length()));
