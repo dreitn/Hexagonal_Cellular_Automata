@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include "base.cpp"
+#include "Timer.cpp"
 
 #define CL_TARGET_OPENCL_VERSION 220
 
@@ -39,7 +40,7 @@ struct openCL_version {
         u_int platform_id = 0, device_id = 0;
 
         try {
-            std::vector<cl::Platform> platforms;
+	    std::vector<cl::Platform> platforms;
             cl::Platform::get(&platforms);
 
             std::vector<cl::Device> devices;
