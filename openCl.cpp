@@ -50,13 +50,13 @@ struct openCL_version {
 
             constexpr size_t data_size = N_ELEMENTS * sizeof(u_char);
 
-            cl::Buffer mapInBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, data_size);
-            cl::Buffer mapOutBuffer = cl::Buffer(context, CL_MEM_WRITE_ONLY, data_size);
+            cl::Buffer current_gen = cl::Buffer(context, CL_MEM_READ_ONLY, data_size);
+            cl::Buffer next_gen = cl::Buffer(context, CL_MEM_WRITE_ONLY, data_size);
 
-            queue.enqueueWriteBuffer(mapInBuffer, CL_FALSE, 0, data_size, map);
+            queue.enqueueWriteBuffer(current_gen, CL_FALSE, 0, data_size, map);
 
             u_char map_out[height][width] = {{}};
-            queue.enqueueWriteBuffer(mapOutBuffer, CL_FALSE, 0, data_size, map_out);
+            queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, map_out);
 
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
@@ -69,23 +69,23 @@ struct openCL_version {
 
             cl::Kernel kernel(program, "octagonal");
 
-            kernel.setArg(0, mapInBuffer);
+            kernel.setArg(0, current_gen);
             kernel.setArg(1, height);
             kernel.setArg(2, width);
-            kernel.setArg(3, mapOutBuffer);
+            kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
             cl::NDRange local(32, 32);
 
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
-                queue.enqueueCopyBuffer(mapOutBuffer, mapInBuffer, 0, 0, data_size);
-                //queue.enqueueReadBuffer(mapInBuffer, CL_TRUE, 0, data_size, map);
+                queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
+                //queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
                 //std::cout << "iteration: " << i << std::endl;
                 //print();
             }
 
-            queue.enqueueReadBuffer(mapInBuffer, CL_TRUE, 0, data_size, map);
+            queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
 
         }
         catch (const cl::Error& err) {
