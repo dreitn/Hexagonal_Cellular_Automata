@@ -70,7 +70,7 @@ int main() {
     std::cout << "openCl version: ";
     openCL_version openCl(map, it);
     {
-        Timer t;
+	// Time messrement inside the function, reading the kernel and compiling takes long time 
         openCl();
     }
     //openCl.print();
