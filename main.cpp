@@ -43,9 +43,8 @@ void validate_result(const auto &reference, const auto &other) {
 int main() {
     constexpr size_t w = 1024, h = 1024, it = 2000;
     enum { hex, oct };
-    auto type = hex;
 
-    std::cout << "size: " << h << "*" << w << " iterations: " << it << " type: " << ((type == hex) ? "hex" : "oct") << std::endl;
+    std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
 
     cell map[h][w];
     setupMap(map);
