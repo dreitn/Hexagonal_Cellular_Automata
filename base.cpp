@@ -1,5 +1,5 @@
 #pragma once
-#import "cell.cpp"
+#include "cell.cpp"
 #include <iostream>
 
 
@@ -11,13 +11,9 @@ struct base {
     cell map[height][width];
     const int iterations;
 
-    base(cell (&m)[height][width], int iterations) : iterations(iterations) {
+    base(const cell (&m)[height][width], int iterations) : iterations(iterations) {
         std::copy(&m[0][0], &m[0][0]+height*width,&map[0][0]);
     }
-    const cell& operator[](int i){
-        return &(this->map[i]);
-    }
-
 
 /* classic game of life rule
     * •“ Birth” happens in the centre if there are three neighbours.
@@ -26,27 +22,20 @@ struct base {
     */
     inline cell rule(const cell &cell, u_int8_t life) {
         if (cell == dead && life == 3) return alive;
-        if (cell == alive && life == 2 || life == 3) return alive;
+        if ((cell == alive) && (life == 2 || life == 3)) return alive;
 
         return dead;
     }
 
-    inline u_int8_t count_life(int i, int j) {
-        return map[i-1][j-1] + map[i-1][j] + map[i][j+1] +
-               map[i][j-1] + map[i][j+1] +
-               map[i+1][j-1] + map[i+1][j] + map[i+1][j+1];
-        //return map[i-1][j-1] + map[i][j-1] + map[i][j-1] + map[i][j+1] + map[i][j+1] + map[i+1][j+1];
+    inline uint8_t octagonal(cell** map_in, int i, int j) {
+        return map_in[i-1][j-1] + map_in[i-1][j] + map_in[i-1][j+1] +
+               map_in[ i ][j-1] +                  map_in[ i ][j+1] +
+               map_in[i+1][j-1] + map_in[i+1][j] + map_in[i+1][j+1];
     }
 
-    void print() {
-        for (size_t i = 0; i < height; i++) {
-            for (size_t j = 0; j < width; j++) {
-                if (map[i][j] == alive) std::cout << '.' << ' ';
-                if (map[i][j] == dead) std::cout << 'X' << ' ';
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
+    inline uint8_t hexagonal(cell** map_in, int i, int j) {
+        return map_in[i-1][j-1] + map_in[i-1][j] +
+               map_in[ i ][j-1]                  + map_in[ i ][j+1] +
+                                + map_in[i+1][j] + map_in[i+1][j+1];
     }
-
 };

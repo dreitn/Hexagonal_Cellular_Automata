@@ -1,7 +1,7 @@
 #include <iostream>
 #include "openCl.cpp"
 #include "cell.cpp"
-#include "omp.cpp"
+#include "openmp.cpp"
 #include "sequential.cpp"
 #include "Timer.cpp"
 
@@ -28,51 +28,53 @@ void populateMap(auto (&map)[height][width]) {
     }
 }
 
-void validate_result(const auto& reference, const auto& other) {
+void validate_result(const auto &reference, const auto &other) {
     for (size_t i = 0; i < reference.h; i++) {
         for (size_t j = 0; j < reference.w; j++) {
-            if ((u_char)reference.map[i][j] != (u_char)other.map[i][j]) {
-                std::cout << "i: " << i << " j: " << j << std::endl;
-                std::cout << (int)reference.map[i][j] << " " << (int)other.map[i][j] << std::endl;
-                std::cout << "error, results are not the same!\n" << std::endl;
+            if ((u_char) reference.map[i][j] != (u_char)other.map[i][j]) {
+                std::cerr << "- error, results are not the same!" << std::endl;
                 return;
             }
         }
     }
+    std::cout << "+ result seems to be ok" << std::endl;
 }
 
 int main() {
-    constexpr int w = 8, h = 8, it = 1;
+    constexpr size_t w = 1024, h = 1024, it = 2000;
+    enum { hex, oct };
+    auto type = hex;
+
+    std::cout << "size: " << h << "*" << w << " iterations: " << it << " type: " << ((type == hex) ? "hex" : "oct") << std::endl;
 
     cell map[h][w];
     setupMap(map);
     populateMap(map);
 
-    sequential_version serial(map, it);
-    serial.print();
-    std::cout << std::endl;
+    sequential_version seq(map, it);
+    std::cout << "sequential version: ";
     {
         Timer t;
-        serial();
+        seq();
     }
-    std::cout << "seq_version\n";
-    serial.print();
+    //seq.print();
 
-/*
+    std::cout << "openmp version: ";
     omp_version omp(map, it);
     {
         Timer t;
         omp();
     }
-    omp.print();
-    validate_result(serial, omp);
-*/
-    std::cout << "openCl version:\n";
+    //omp.print();
+    validate_result(seq, omp);
+
+    std::cout << "openCl version: ";
     openCL_version openCl(map, it);
     {
         Timer t;
         openCl();
     }
-    openCl.print();
-    //validate_result(serial, openCl);
+    //openCl.print();
+    validate_result(seq, openCl);
+
 }
