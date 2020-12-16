@@ -6,7 +6,6 @@ struct omp_version : public base<height, width> {
 
     omp_version(const cell (&map)[height][width], int iterations) : base<height, width>(map, iterations),
                                                               iterations(iterations) {}
-
     size_t iterations;
 
     void operator()() {

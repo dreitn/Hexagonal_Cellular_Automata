@@ -56,8 +56,8 @@ struct openCL_version {
 
             queue.enqueueWriteBuffer(current_gen, CL_FALSE, 0, data_size, map);
 
-            u_char map_out[height][width] = {{}};
-            queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, map_out);
+            u_char empty[height][width] = {{}};
+            queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, empty);
 
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
@@ -81,9 +81,6 @@ struct openCL_version {
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
                 queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
-                //queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
-                //std::cout << "iteration: " << i << std::endl;
-                //print();
             }
 
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
