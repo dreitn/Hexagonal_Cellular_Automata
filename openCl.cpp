@@ -43,7 +43,7 @@ struct openCL_version {
             cl::Platform::get(&platforms);
 
             std::vector<cl::Device> devices;
-            platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU | CL_DEVICE_TYPE_CPU, &devices);
+            platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU, &devices);
 
             cl::Context context(devices);
             cl::CommandQueue queue = cl::CommandQueue(context, devices[device_id]);
@@ -75,7 +75,7 @@ struct openCL_version {
             kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
-            cl::NDRange local(32, 32);
+            cl::NDRange local(16, 16);
 
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
