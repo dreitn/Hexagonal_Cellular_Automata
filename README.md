@@ -2,6 +2,7 @@
 Conways game of life hexagonal
 
 make run
+
 g++ -std=c++20 -O2 -Wall -Wextra -fopenmp -lOpenCL -pedantic -o game_of_life main.cpp ./game_of_life
 
 size: 1024*1024 iterations: 2000
