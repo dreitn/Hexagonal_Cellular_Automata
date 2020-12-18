@@ -78,12 +78,15 @@ struct openCL_version {
             cl::NDRange global(height, width);
             cl::NDRange local(16, 16);
 
+	    Timer* t = new Timer();
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
                 queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
             }
 
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
+
+	    delete t;
 
         }
         catch (const cl::Error& err) {
