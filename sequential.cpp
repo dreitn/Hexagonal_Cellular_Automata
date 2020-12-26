@@ -8,8 +8,9 @@ template<int height, int width>
 struct sequential_version : public base<height, width> {
     size_t iterations;
 
-    sequential_version(const cell (&map)[height][width], int iterations) : base<height, width>(map, iterations),
-                                                                     iterations(iterations) {}
+    sequential_version(const std::vector<std::vector<cell>>& map, int iterations) :
+        base<height, width>(map, iterations), iterations(iterations) {}
+
     void operator()() {
         // create an 2 dim array
         cell **current_gen = new cell *[height];

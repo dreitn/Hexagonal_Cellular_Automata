@@ -24,7 +24,7 @@ struct openCL_version {
     size_t iterations;
     u_char map[height][width];
 
-    openCL_version(cell (&m)[height][width], int iterations) : iterations(iterations) {
+    openCL_version(const std::vector<std::vector<cell>> &m, int iterations) : iterations(iterations) {
         for (size_t i = 0; i < height; i++) {
             for (size_t j = 0; j < width; j++) {
                 map[i][j] = (u_char) m[i][j];
@@ -40,7 +40,7 @@ struct openCL_version {
         u_int platform_id = 0, device_id = 0;
 
         try {
-	    std::vector<cl::Platform> platforms;
+            std::vector<cl::Platform> platforms;
             cl::Platform::get(&platforms);
 
             std::vector<cl::Device> devices;
@@ -78,7 +78,7 @@ struct openCL_version {
             cl::NDRange global(height, width);
             cl::NDRange local(16, 16);
 
-	    Timer* t = new Timer();
+            Timer *t = new Timer();
             for (size_t i = 0; i < iterations; i++) {
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
                 queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
@@ -86,10 +86,10 @@ struct openCL_version {
 
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
 
-	    delete t;
+            delete t;
 
         }
-        catch (const cl::Error& err) {
+        catch (const cl::Error &err) {
             std::cerr << "ERROR: " << err.what() << "(" << err.err() << ")" << std::endl;
         }
     }

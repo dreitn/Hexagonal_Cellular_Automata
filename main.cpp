@@ -7,7 +7,7 @@
 
 
 template<int height, int width>
-void setupMap(cell (&map)[height][width]) {
+void setupMap(auto& map) {
     for (size_t i = 0; i < width; i++) {
         map[0][i] = dead;
         map[height - 1][i] = dead;
@@ -20,7 +20,7 @@ void setupMap(cell (&map)[height][width]) {
 }
 
 template<int height, int width>
-void populateMap(auto (&map)[height][width]) {
+void populateMap(auto& map) {
     for (size_t i = 1; i < height - 1; i++) {
         for (size_t j = 1; j < width - 1; j++) {
             map[i][j] = static_cast<cell>( rand() % states );
@@ -41,16 +41,17 @@ void validate_result(const auto &reference, const auto &other) {
 }
 
 int main() {
-    constexpr size_t w = 1024, h = 1024, it = 2000;
+    constexpr size_t w = 2048, h = 2048, it = 100;
+    std::cout << ((w * h) / 1024)  /1024 << "Gb\n";
     enum { hex, oct };
 
-    std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
+    //std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
 
-    cell map[h][w];
-    setupMap(map);
-    populateMap(map);
+    std::vector<std::vector<cell>> map = std::vector(h, std::vector<cell>(w, dead));
+    setupMap<h, w>(map);
+    populateMap<h, w>(map);
 
-    sequential_version seq(map, it);
+    sequential_version<h, w> seq(map, it);
     std::cout << "sequential version: ";
     {
         Timer t;
@@ -59,7 +60,7 @@ int main() {
     //seq.print();
 
     std::cout << "openmp version: ";
-    omp_version omp(map, it);
+    omp_version<h, w> omp(map, it);
     {
         Timer t;
         omp();
@@ -68,9 +69,9 @@ int main() {
     validate_result(seq, omp);
 
     std::cout << "openCl version: ";
-    openCL_version openCl(map, it);
+    openCL_version<h, w> openCl(map, it);
     {
-	// Time messrement inside the function, reading the kernel and compiling takes long time 
+	// Time messurement inside the function, reading the kernel and compiling takes long time
         openCl();
     }
     //openCl.print();

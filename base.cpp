@@ -1,19 +1,18 @@
 #pragma once
 #include "cell.cpp"
 #include <iostream>
-
+#include <vector>
 
 template <int height, int width>
 struct base {
     static const int h = height;
     static const int w = width;
 
-    cell map[height][width];
     const int iterations;
 
-    base(const cell (&m)[height][width], int iterations) : iterations(iterations) {
-        std::copy(&m[0][0], &m[0][0]+height*width,&map[0][0]);
-    }
+    std::vector<std::vector<cell>> map;
+
+    base(const std::vector<std::vector<cell>>& map, int iterations) : map(map), iterations(iterations) {}
 
 /* classic game of life rule
     * •“ Birth” happens in the centre if there are three neighbours.
