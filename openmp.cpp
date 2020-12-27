@@ -32,6 +32,7 @@ struct omp_version : public base<height, width> {
         for (int i = 0; i < height; i++) {
             map_out[i] = new cell[width]{};
         }
+	Timer* t = new Timer;
 
         for (size_t g = 0; g < iterations; g++) {
 
@@ -50,6 +51,8 @@ struct omp_version : public base<height, width> {
             std::swap(map_in, map_out);
             // std::cout << "iteration: " << g << std::endl;
         }
+
+	delete t;
 
         // after the last generation copy the results back
         for (size_t i = 0; i < height; i++) {

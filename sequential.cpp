@@ -34,6 +34,7 @@ struct sequential_version : public base<height, width> {
             next_gen[i] = new cell[width]{};
         }
 
+	Timer* t = new Timer;
         for (size_t g = 0; g < iterations; g++) {
 
             for (size_t i = 1; i < height - 1; i++) {
@@ -49,7 +50,7 @@ struct sequential_version : public base<height, width> {
 
             std::swap(current_gen, next_gen);
         }
-
+	delete t;
         // after the last generation copy the results back
         for (size_t i = 0; i < height; i++) {
             for (size_t j = 0; j < width; j++) {

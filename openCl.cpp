@@ -76,7 +76,7 @@ struct openCL_version {
             kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
-            cl::NDRange local(16, 16);
+            cl::NDRange local(32, 32);
 
             Timer *t = new Timer();
             for (size_t i = 0; i < iterations; i++) {
@@ -84,9 +84,8 @@ struct openCL_version {
                 queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
             }
 
+	    delete t;
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
-
-            delete t;
 
         }
         catch (const cl::Error &err) {

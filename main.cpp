@@ -41,7 +41,7 @@ void validate_result(const auto &reference, const auto &other) {
 }
 
 int main() {
-    constexpr size_t w = 2048, h = 2048, it = 100;
+    constexpr size_t h = 1536, w = 1536, it = 1000;
     std::cout << ((w * h) / 1024)  /1024 << "Gb\n";
     enum { hex, oct };
 
@@ -53,21 +53,17 @@ int main() {
 
     sequential_version<h, w> seq(map, it);
     std::cout << "sequential version: ";
-    {
-        Timer t;
-        seq();
-    }
+    seq();
     //seq.print();
 
-    std::cout << "openmp version: ";
-    omp_version<h, w> omp(map, it);
     {
-        Timer t;
-        omp();
+       std::cout << "openmp version: ";
+       omp_version<h, w> omp(map, it);
+       // Messure only the calculation, not copying
+       omp();
+       //omp.print();
+       validate_result(seq, omp);
     }
-    //omp.print();
-    validate_result(seq, omp);
-
     std::cout << "openCl version: ";
     openCL_version<h, w> openCl(map, it);
     {
