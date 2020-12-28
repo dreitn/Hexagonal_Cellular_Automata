@@ -36,7 +36,7 @@ struct openCL_version {
     // https://www.coursera.org/lecture/opencl-fpga-introduction/ndrange-and-single-work-item-kernels-1J01b
     void operator()() {
 
-        const int N_ELEMENTS = height * width;
+        const size_t N_ELEMENTS = height * width;
         u_int platform_id = 0, device_id = 0;
 
         try {
@@ -44,7 +44,7 @@ struct openCL_version {
             cl::Platform::get(&platforms);
 
             std::vector<cl::Device> devices;
-            platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU, &devices);
+            platforms[platform_id].getDevices(CL_DEVICE_TYPE_DEFAULT, &devices);
 
             cl::Context context(devices);
             cl::CommandQueue queue = cl::CommandQueue(context, devices[device_id]);
@@ -55,9 +55,7 @@ struct openCL_version {
             cl::Buffer next_gen = cl::Buffer(context, CL_MEM_WRITE_ONLY, data_size);
 
             queue.enqueueWriteBuffer(current_gen, CL_FALSE, 0, data_size, map);
-
-            u_char empty[height][width] = {{}};
-            queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, empty);
+            queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, map);
 
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
