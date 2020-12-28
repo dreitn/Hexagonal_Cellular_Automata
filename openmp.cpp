@@ -1,4 +1,5 @@
 #include "base.cpp"
+#include "Timer.cpp"
 #include <omp.h>
 
 template<int height, int width>

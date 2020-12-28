@@ -22,12 +22,12 @@
 template<int height, int width>
 struct openCL_version {
     size_t iterations;
-    u_char map[height][width];
+    u_char* map = new u_char [height*width]{0};
 
-    openCL_version(const std::vector<std::vector<cell>> &m, int iterations) : iterations(iterations) {
+    openCL_version(const std::vector<std::vector<cell>> &map, int iterations) : iterations(iterations) {
         for (size_t i = 0; i < height; i++) {
             for (size_t j = 0; j < width; j++) {
-                map[i][j] = (u_char) m[i][j];
+                this->map[(i*width) + j] = (u_char) map[i][j];
             }
         }
     }
@@ -76,7 +76,7 @@ struct openCL_version {
             kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
-            cl::NDRange local(32, 32);
+            cl::NDRange local(16, 16);
 
             Timer *t = new Timer();
             for (size_t i = 0; i < iterations; i++) {
@@ -96,9 +96,7 @@ struct openCL_version {
     void print() {
         for (size_t i = 0; i < height; i++) {
             for (size_t j = 0; j < width; j++) {
-                // if ((int) map[i][j] == alive) std::cout << '.' << ' ';
-                // if ((int) map[i][j] == dead) std::cout << 'X' << ' ';
-                std::cout << (int) map[i][j] << ' ';
+                std::cout << (int) map[(i * width) + j] << ' ';
             }
             std::cout << std::endl;
         }

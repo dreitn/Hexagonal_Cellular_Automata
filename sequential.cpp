@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <functional>
+#include "Timer.cpp"
 #include "cell.cpp"
 #include "base.cpp"
 #include "omp.h"
@@ -47,7 +48,6 @@ struct sequential_version : public base<height, width> {
 
                 }
             }
-
             std::swap(current_gen, next_gen);
         }
 	delete t;
@@ -62,5 +62,7 @@ struct sequential_version : public base<height, width> {
             delete[] current_gen[i];
             delete[] next_gen[i];
         }
+        delete[] current_gen;
+        delete[] next_gen;
     }
 };

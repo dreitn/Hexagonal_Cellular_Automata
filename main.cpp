@@ -40,12 +40,24 @@ void validate_result(const auto &reference, const auto &other) {
     std::cout << "+ result seems to be ok" << std::endl;
 }
 
+template<int h, int w>
+void validate_result(const auto &reference, const auto& other) {
+    for (size_t i = 0; i < reference.h; i++) {
+        for (size_t j = 0; j < reference.w; j++) {
+            if ((u_char) reference.map[i][j] != (u_char)other.map[(i * w) + j]) {
+                std::cerr << "- error, results are not the same!" << std::endl;
+                return;
+            }
+        }
+    }
+    std::cout << "+ result seems to be ok" << std::endl;
+}
 int main() {
-    constexpr size_t h = 1536, w = 1536, it = 1000;
-    std::cout << "height: " << h << " width: " << w  << " iterations: " << it << " size: " << ((w * h) / 1024)  /1024 << "Gb\n";
+    constexpr size_t h = 32768, w = 32768, it = 2;
+    std::cout << "height: " << h << " width: " << w  << " iterations: " << it << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
     enum { hex, oct };
 
-    //std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
+    std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
 
     std::vector<std::vector<cell>> map = std::vector(h, std::vector<cell>(w, dead));
     setupMap<h, w>(map);
@@ -71,6 +83,6 @@ int main() {
         openCl();
     }
     //openCl.print();
-    validate_result(seq, openCl);
+    validate_result<h, w>(seq, openCl);
 
 }
