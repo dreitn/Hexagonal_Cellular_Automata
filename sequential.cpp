@@ -5,7 +5,7 @@
 #include "base.cpp"
 #include "omp.h"
 
-template<int height, int width>
+template<size_t height, size_t width>
 struct sequential_version : public base<height, width> {
     size_t iterations;
 

@@ -2,7 +2,7 @@
 #include "Timer.cpp"
 #include <omp.h>
 
-template<int height, int width>
+template<size_t height, size_t width>
 struct omp_version : public base<height, width> {
 
     omp_version(const std::vector<std::vector<cell>>& map,int iterations)

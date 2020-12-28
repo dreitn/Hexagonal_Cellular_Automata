@@ -19,7 +19,7 @@
 #endif
 
 
-template<int height, int width>
+template<size_t height, size_t width>
 struct openCL_version {
     size_t iterations;
     u_char* map = new u_char [height*width]{0};
@@ -60,7 +60,7 @@ struct openCL_version {
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
 
-            //std::cout << sourceCode << std::endl;
+            std::cout << sourceCode << std::endl;
             cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length()));
 
             cl::Program program = cl::Program(context, source);
@@ -69,12 +69,12 @@ struct openCL_version {
             cl::Kernel kernel(program, "octagonal");
 
             kernel.setArg(0, current_gen);
-            kernel.setArg(1, height);
-            kernel.setArg(2, width);
+            kernel.setArg(1, (int)height);
+            kernel.setArg(2, (int)width);
             kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
-            cl::NDRange local(16, 16);
+            cl::NDRange local(32, 32);
 
             Timer *t = new Timer();
             for (size_t i = 0; i < iterations; i++) {
@@ -82,9 +82,8 @@ struct openCL_version {
                 queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
             }
 
-	    delete t;
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
-
+	    delete t;
         }
         catch (const cl::Error &err) {
             std::cerr << "ERROR: " << err.what() << "(" << err.err() << ")" << std::endl;
@@ -100,5 +99,4 @@ struct openCL_version {
         }
         std::cout << std::endl;
     }
-
 };

@@ -53,7 +53,7 @@ void validate_result(const auto &reference, const auto& other) {
     std::cout << "+ result seems to be ok" << std::endl;
 }
 int main() {
-    constexpr size_t h = 32768, w = 32768, it = 100;
+    constexpr size_t h = 32768, w = 32768, it = 25;
     std::cout << "height: " << h << " width: " << w  << " iterations: " << it << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
     enum { hex, oct };
 
