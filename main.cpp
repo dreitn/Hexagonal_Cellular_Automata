@@ -53,7 +53,7 @@ void validate_result(const auto &reference, const auto& other) {
     std::cout << "+ result seems to be ok" << std::endl;
 }
 int main() {
-    constexpr size_t h = 32768, w = 32768, it = 25;
+    constexpr size_t h = 32768, w = 32768, it = 100;
     std::cout << "height: " << h << " width: " << w  << " iterations: " << it << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
     enum { hex, oct };
 
@@ -71,7 +71,7 @@ int main() {
     {
        std::cout << "openmp version: ";
        omp_version<h, w> omp(map, it);
-       // Messure only the calculation, not copying
+       // Measures only the calculation, not copying
        omp();
        //omp.print();
        validate_result(seq, omp);
@@ -79,7 +79,7 @@ int main() {
     std::cout << "openCl version: ";
     openCL_version<h, w> openCl(map, it);
     {
-	// Time messurement inside the function, reading the kernel and compiling takes long time
+	// Time measurement inside the function, reading the kernel and compiling takes long time
         openCl();
     }
     //openCl.print();

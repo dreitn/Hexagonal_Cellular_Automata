@@ -60,7 +60,7 @@ struct openCL_version {
             std::ifstream sourceFile("kernel.cl");
             std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
 
-            std::cout << sourceCode << std::endl;
+            // std::cout << sourceCode << std::endl;
             cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length()));
 
             cl::Program program = cl::Program(context, source);
