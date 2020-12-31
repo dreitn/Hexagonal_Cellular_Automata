@@ -22,12 +22,12 @@
 template<size_t height, size_t width>
 struct openCL_version {
     size_t iterations;
-    u_char* map = new u_char [height*width]{0};
+    u_char *map = new u_char[height * width]{0};
 
-    openCL_version(const std::vector<std::vector<cell>> &map, int iterations) : iterations(iterations) {
+    openCL_version(const std::vector <std::vector<cell>> &map, int iterations) : iterations(iterations) {
         for (size_t i = 0; i < height; i++) {
             for (size_t j = 0; j < width; j++) {
-                this->map[(i*width) + j] = (u_char) map[i][j];
+                this->map[(i * width) + j] = (u_char) map[i][j];
             }
         }
     }
@@ -40,10 +40,10 @@ struct openCL_version {
         u_int platform_id = 0, device_id = 0;
 
         try {
-            std::vector<cl::Platform> platforms;
+            std::vector <cl::Platform> platforms;
             cl::Platform::get(&platforms);
 
-            std::vector<cl::Device> devices;
+            std::vector <cl::Device> devices;
             platforms[platform_id].getDevices(CL_DEVICE_TYPE_DEFAULT, &devices);
 
             cl::Context context(devices);
@@ -69,8 +69,8 @@ struct openCL_version {
             cl::Kernel kernel(program, "octagonal");
 
             kernel.setArg(0, current_gen);
-            kernel.setArg(1, (int)height);
-            kernel.setArg(2, (int)width);
+            kernel.setArg(1, height);
+            kernel.setArg(2, width);
             kernel.setArg(3, next_gen);
 
             cl::NDRange global(height, width);
@@ -83,7 +83,7 @@ struct openCL_version {
             }
 
             queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
-	    delete t;
+            delete t;
         }
         catch (const cl::Error &err) {
             std::cerr << "ERROR: " << err.what() << "(" << err.err() << ")" << std::endl;

@@ -3,7 +3,7 @@ char get(__global const char *map, int y, int x, int gw) {
     return map[y * gw + x];
 }
 
-__kernel void octagonal(__global const char *map, int height, int width, __global char *map_out) {
+__kernel void octagonal(__global const char *map, ulong height, ulong width, __global char *map_out) {
     int x = get_global_id(0);
     int y = get_global_id(1);
 

@@ -53,31 +53,31 @@ void validate_result(const auto &reference, const auto& other) {
     std::cout << "+ result seems to be ok" << std::endl;
 }
 int main() {
-    constexpr size_t h = 32768, w = 32768, it = 100;
-    std::cout << "height: " << h << " width: " << w  << " iterations: " << it << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
+    constexpr size_t h = 32768, w = 32768, gen = 10;
+    std::cout << "height: " << h << " width: " << w  << " generations: " << gen << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
     enum { hex, oct };
 
-    std::cout << "size: " << h << "*" << w << " iterations: " << it << std::endl;
+    std::cout << "size: " << h << "*" << w << " iterations: " << gen << std::endl;
 
     std::vector<std::vector<cell>> map = std::vector(h, std::vector<cell>(w, dead));
     setupMap<h, w>(map);
     populateMap<h, w>(map);
 
-    sequential_version<h, w> seq(map, it);
+    sequential_version<h, w> seq(map, gen);
     std::cout << "sequential version: ";
     seq();
     //seq.print();
 
     {
        std::cout << "openmp version: ";
-       omp_version<h, w> omp(map, it);
+       omp_version<h, w> omp(map, gen);
        // Measures only the calculation, not copying
        omp();
        //omp.print();
        validate_result(seq, omp);
     }
     std::cout << "openCl version: ";
-    openCL_version<h, w> openCl(map, it);
+    openCL_version<h, w> openCl(map, gen);
     {
 	// Time measurement inside the function, reading the kernel and compiling takes long time
         openCl();

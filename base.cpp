@@ -19,20 +19,36 @@ struct base {
     * • The centre cell “Survives” if there are two or three neighbours.
     * • Otherwise, all the exceptions result in death.
     */
-    inline cell rule(const cell &cell, u_int8_t life) {
+    inline cell rule(const cell &cell, u_int8_t life) const {
         if (cell == dead && life == 3) return alive;
         if ((cell == alive) && (life == 2 || life == 3)) return alive;
 
         return dead;
     }
 
-    inline uint8_t octagonal(cell** map_in, int i, int j) {
+    inline uint8_t octagonal(cell** map_in, int i, int j) const {
         return map_in[i-1][j-1] + map_in[i-1][j] + map_in[i-1][j+1] +
                map_in[ i ][j-1] +                  map_in[ i ][j+1] +
                map_in[i+1][j-1] + map_in[i+1][j] + map_in[i+1][j+1];
     }
 
-    inline uint8_t hexagonal(cell** map_in, int i, int j) {
+    inline int f(int i, int j) const {
+        return (i * w) + j;
+    };
+
+    inline uint8_t octagonal(cell* map, int i, int j) const {
+        return map[f(i-1, j-1 )] + map[f(i-1, j )] + map[f(i-1, j+1)] +
+               map[f( i , j-1 )] +                  map[f( i , j+1)] +
+               map[f(i+1, j-1 )] + map[f(i+1, j )] + map[f(i+1, j+1)];
+    }
+
+    inline uint8_t hexagonal(cell* map, int i, int j) const {
+        return map[f(i-1, j-1)] + map[f(i-1, j )] +
+               map[f( i , j-1)]                           + map[f(i, j+1)] +
+                                         + map[f(i+1, j)] + map[f(i+1, j+1)];
+    }
+
+    inline uint8_t hexagonal(cell** map_in, int i, int j) const {
         return map_in[i-1][j-1] + map_in[i-1][j] +
                map_in[ i ][j-1]                  + map_in[ i ][j+1] +
                                 + map_in[i+1][j] + map_in[i+1][j+1];
