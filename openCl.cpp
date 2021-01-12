@@ -51,8 +51,8 @@ struct openCL_version {
 
             constexpr size_t data_size = N_ELEMENTS * sizeof(u_char);
 
-            cl::Buffer current_gen = cl::Buffer(context, CL_MEM_READ_ONLY, data_size);
-            cl::Buffer next_gen = cl::Buffer(context, CL_MEM_WRITE_ONLY, data_size);
+            cl::Buffer current_gen = cl::Buffer(context, CL_MEM_READ_WRITE, data_size);
+            cl::Buffer next_gen = cl::Buffer(context, CL_MEM_READ_WRITE, data_size);
 
             queue.enqueueWriteBuffer(current_gen, CL_FALSE, 0, data_size, map);
             queue.enqueueWriteBuffer(next_gen, CL_FALSE, 0, data_size, map);
@@ -77,12 +77,31 @@ struct openCL_version {
             cl::NDRange local(32, 32);
 
             Timer *t = new Timer();
-            for (size_t i = 0; i < iterations; i++) {
+
+
+
+            size_t i = 0;
+            while (i < iterations) {
+                kernel.setArg(1, height);
+                kernel.setArg(2, width);
+
+                if (i%2 == 0) {
+                    kernel.setArg(0, current_gen);
+                    kernel.setArg(3, next_gen);
+                } else {
+                    kernel.setArg(0, next_gen);
+                    kernel.setArg(3, current_gen);
+                }
                 queue.enqueueNDRangeKernel(kernel, 0, global, local);
-                queue.enqueueCopyBuffer(next_gen, current_gen, 0, 0, data_size);
+                i++;
             }
 
-            queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
+            if ((i-1)%2 == 0) {
+                queue.enqueueReadBuffer(next_gen, CL_TRUE, 0, data_size, map);
+            } else {
+                queue.enqueueReadBuffer(current_gen, CL_TRUE, 0, data_size, map);
+            }
+
             delete t;
         }
         catch (const cl::Error &err) {

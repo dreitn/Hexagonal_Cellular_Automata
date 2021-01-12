@@ -53,11 +53,8 @@ void validate_result(const auto &reference, const auto& other) {
     std::cout << "+ result seems to be ok" << std::endl;
 }
 int main() {
-    constexpr size_t h = 32768, w = 32768, gen = 10;
+    constexpr size_t h = 32768, w = 32768, gen = 100;
     std::cout << "height: " << h << " width: " << w  << " generations: " << gen << " size: " << (w * h) / (1024 * 1024 * 1024) << "Gb\n";
-    enum { hex, oct };
-
-    std::cout << "size: " << h << "*" << w << " iterations: " << gen << std::endl;
 
     std::vector<std::vector<cell>> map = std::vector(h, std::vector<cell>(w, dead));
     setupMap<h, w>(map);
