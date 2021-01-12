@@ -44,7 +44,7 @@ struct openCL_version {
             cl::Platform::get(&platforms);
 
             std::vector <cl::Device> devices;
-            platforms[platform_id].getDevices(CL_DEVICE_TYPE_DEFAULT, &devices);
+            platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU | CL_DEVICE_TYPE_CPU, &devices);
 
             cl::Context context(devices);
             cl::CommandQueue queue = cl::CommandQueue(context, devices[device_id]);
